@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="30">
+    <Appenders>
+        <RollingRandomAccessFile name="file" fileName="logs/thinkehr.log" filePattern="logs/thinkehr-%i.log.gz">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %p %c{1} [%X{requestId}/%X{sessionId}/%X{origin}] - %m%n</Pattern>
+            </PatternLayout>
+        </RollingRandomAccessFile>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %p %c{1} [%X{requestId}/%X{sessionId}/%X{origin}] - %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="file"/>
+        </Root>
+        <Logger name="com.marand.thinkehr.server.auditing" level="debug" additivity="true"/>
+    </Loggers>
+</Configuration>

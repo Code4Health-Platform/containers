@@ -1,0 +1,28 @@
+# Dockerfile for Marand Think!EHR Server
+
+FROM centos:7
+
+LABEL Vendor="Inidus" \
+      License=Apache \
+      Version=0.0.3 \
+      Maintainer="Inidus <cloud-ops@inidus.io>"
+
+# Docker - Set ENV to be used in the build
+ENV JAVA_VERSION_MAJOR=8 \
+    JAVA_VERSION_MINOR=162 \
+    JAVA_VERSION_BUILD=12 \
+    JAVA_URL_HASH=0da788060d494f5095bf8624735fa2f1 \
+    INIDUS_PATH=/opt/inidus/thinkehr
+
+# Centos - Install pkgs
+RUN mkdir -p ${INIDUS_PATH} && \
+    yum -y --setopt=tsflags=nodocs install epel-release && \
+    yum -y --setopt=tsflags=nodocs update && \
+    yum -y --setopt=tsflags=nodocs install wget curl unzip python-setuptools hostname inotify-tools which jq supervisor && \
+    wget -q --no-cookies --no-check-certificate \
+    --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2Ftechnetwork%2Fjava%2Fjavase%2Fdownloads%2Fjre8-downloads-2133155.html; oraclelicense=accept-securebackup-cookie" \
+    "http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-b${JAVA_VERSION_BUILD}/${JAVA_URL_HASH}/jre-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.rpm" && \
+    yum localinstall -y jre-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.rpm && \
+    rm -f jre-${JAVA_VERSION_MAJOR}u${JAVA_VERSION_MINOR}-linux-x64.rpm && \
+    yum clean all && \
+    rm -rf /var/cache/yum

@@ -1,0 +1,42 @@
+# Dockerfile for Marand Think!EHR Server
+
+FROM openjdk:8-jdk-slim-stretch
+
+LABEL Vendor="Inidus" \
+      License=Apache \
+      Version=0.0.3 \
+      Maintainer="Inidus <security@inidus.cloud>"
+
+# Docker - Set ARG to be used in the build
+ARG THINKEHR_JSW
+ARG THINKEHR_SVR
+ARG THINKEHR_VER
+
+# Docker - Set ENV to be used in the build
+ENV THINKEHR_JSW=$THINKEHR_JSW \
+    THINKEHR_SVR=$THINKEHR_SVR \
+    THINKEHR_VER=$THINKEHR_VER \
+    THINKEHR_PATH=/opt/thinkehr
+
+RUN apt-get update \
+    && apt-get install -y wget supervisor --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+# Inidus - WORKDIR
+WORKDIR ${THINKEHR_PATH}
+
+# Inidus - Install Think!EHR server
+ADD ./source/${THINKEHR_JSW} .
+ADD ./source/${THINKEHR_SVR} .
+
+EXPOSE 8080 8081 7779 7778 7777
+
+VOLUME  ${THINKEHR_PATH}/logs ${THINKEHR_PATH}/indexes ${THINKEHR_PATH}/conf
+
+# Inidus - supervisord for thinkehr
+COPY ./include/etc/supervisord.conf /etc/supervisord.conf
+
+# Inidus - Supervisord bootstrap
+COPY ./include/bootstrap.sh /bootstrap.sh
+
+CMD ["/bootstrap.sh"]

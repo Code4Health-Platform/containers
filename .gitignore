@@ -1,0 +1,53 @@
+######################
+# Project Specific
+######################
+.vagrant
+*.log
+*.pid
+.env
+*.license
+vagrant_deploy/index
+
+######################
+# Package Files
+######################
+*.war
+*.jar
+
+######################
+# Compressed archives
+######################
+*.zip
+*.tar.gz
+
+######################
+# Other binary
+######################
+*.pdf
+
+######################
+# Windows
+######################
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+######################
+# Mac OSX
+######################
+.DS_Store
+.svn
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+######################
+# initdb files
+######################
+*.sql

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="30">
+    <Appenders>
+        <RollingRandomAccessFile name="full" fileName="logs/thinkehr-full.log" filePattern="logs/thinkehr-%i.log.gz">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %p %c{1} [%X{requestId}/%X{sessionId}/%X{origin}] - %m%n</Pattern>
+            </PatternLayout>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="events" fileName="logs/thinkehr-events.log" filePattern="logs/thinkehr-%i.log.gz">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %p %c{1} [%X{requestId}/%X{sessionId}/%X{origin}] - %m%n</Pattern>
+            </PatternLayout>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="server" fileName="logs/thinkehr-server.log" filePattern="logs/thinkehr-%i.log.gz">
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %p %c{1} [%X{requestId}/%X{sessionId}/%X{origin}] - %m%n</Pattern>
+            </PatternLayout>
+        </RollingRandomAccessFile>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d{ISO8601} %p %c{1} [%X{requestId}/%X{sessionId}/%X{origin}] - %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="full"/>
+        </Root>
+        <Logger name="com.marand.thinkehr" level="debug" additivity="true"/>
+
+        <Logger name="com.marand.thinkehr.server.interceptor" level="debug" additivity="false">
+            <AppenderRef ref="events"/>
+        </Logger>
+        <Logger name="com.marand.thinkehr.server.impl" level="info" additivity="false">
+            <AppenderRef ref="events"/>
+        </Logger>
+
+        <Logger name="com.marand.thinkehr.server" level="info" additivity="false">
+            <AppenderRef ref="server"/>
+        </Logger>
+        <Logger name="com.marand.maf.jboss.remoting" level="info" additivity="false">
+            <AppenderRef ref="server"/>
+        </Logger>
+        <Logger name="com.marand.thinkehr.service.web.impl" level="info" additivity="false">
+            <AppenderRef ref="server"/>
+        </Logger>
+    </Loggers>
+</Configuration>

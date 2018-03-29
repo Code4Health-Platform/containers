@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# port for web admin service
+ADMIN_PORT=8081
+
+# username and password for access to web admin console - must have ROLE_ADMIN
+USERNAME=admin
+PASSWORD=secret
+
+# timeout in msec after which index snapshot will be released
+# this timeout should be large enough to enable backup to complete - otherwise backup will be incomplete
+TIMEOUT=300000  # 5min
+
+# target location in rsync syntax, can be local or remote
+# TARGET=user@server:/home/ehr/backups/index
+TARGET=/home/ehr/backups/index
