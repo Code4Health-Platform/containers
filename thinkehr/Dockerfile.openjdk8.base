@@ -1,0 +1,12 @@
+# Dockerfile for Marand Think!EHR Server
+
+FROM openjdk:8-jdk-slim-stretch
+
+LABEL Vendor="Inidus" \
+      License=Apache \
+      Version=0.0.3 \
+      Maintainer="Inidus <security@inidus.cloud>"
+
+RUN apt-get update \
+    && apt-get install -y wget supervisor procps --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*

@@ -1,0 +1,30 @@
+# Marand ThinkEHR CDR Database
+version: '3.3'
+
+services:
+
+  thinkehr-db:
+    image: postgres
+    labels:
+      - "cloud.inidus.service.client"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: thinkehr
+      POSTGRES_USER: thinkehr
+      POSTGRES_DB: thinkehr
+    volumes:
+      - "thinkehr-db-data:/var/lib/postgresql/data"
+    deploy:
+      replicas: 1
+    networks:
+      back-net:
+        aliases:
+          - thinkehr-db
+
+networks:
+  back-net:
+    external: true
+
+volumes:
+  thinkehr-db-data:
+    

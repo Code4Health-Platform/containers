@@ -1,0 +1,63 @@
+# Marand Demographics
+version: '3.3'
+
+services:
+
+  demographics-db:
+    image: postgres
+    labels:
+      - "cloud.inidus.service.client"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: demographics
+      POSTGRES_USER: demographics
+      POSTGRES_DB: demographics
+    volumes:
+      - "demographics-db-data:/var/lib/postgresql/data"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    networks:
+      back-net:
+        aliases:
+          - demographics-db
+
+  demographics-app:
+    image: 127.0.0.1:5000/demographics-app
+    labels:
+      - "cloud.inidus.service.client"
+    build:
+      context: .
+      labels:
+        - "cloud.inidus.service.name=Demographics"
+        - "cloud.inidus.service.desc=Marand ThinkEHR Demographics"
+      args:
+        - DEMOGRAPHICS_SRC
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://demographics-db/demographics
+      SPRING_DATASOURCE_USERNAME: demographics
+      SPRING_DATASOURCE_PASSWORD: demographics
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    networks:
+      back-net:
+        aliases:
+          - demographics
+          - demographics-app
+
+networks:
+  back-net:
+    external: true
+
+volumes:
+  demographics-db-data:

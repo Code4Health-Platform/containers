@@ -1,0 +1,36 @@
+# Nginx Reverse Proxy
+version: '3.3'
+
+services:
+
+  proxy:
+    image: 127.0.0.1:5000/nginx
+    labels:
+      - "cloud.inidus.service.client"
+    build:
+      context: .
+      labels:
+        - "cloud.inidus.service.name=Nginx"
+        - "cloud.inidus.service.desc=Reverse proxy"
+    restart: always
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - back-net
+      - front-net
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./conf/:/etc/nginx"
+
+networks:
+  back-net:
+    external: true
+  front-net:
+    external: true

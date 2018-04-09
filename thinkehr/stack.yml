@@ -1,0 +1,63 @@
+# Marand ThinkEHR CDR
+version: '3.3'
+
+services:
+
+  thinkehr-db:
+    image: postgres
+    labels:
+      - "cloud.inidus.service.client"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: thinkehr
+      POSTGRES_USER: thinkehr
+      POSTGRES_DB: thinkehr
+    volumes:
+      - "thinkehr-db-data:/var/lib/postgresql/data"
+    deploy:
+      replicas: 1
+    networks:
+      back-net:
+        aliases:
+          - thinkehr-db
+
+  thinkehr-app:
+    image: 127.0.0.1:5000/thinkehr-${THINKEHR_OS}:${THINKEHR_VER}
+    labels:
+      - "cloud.inidus.service.client"
+    build:
+      context: .
+      labels:
+        - "cloud.inidus.service.name=ThinkEHR CDR"
+        - "cloud.inidus.service.desc=Marand ThinkEHR CDR"
+        - "cloud.inidus.service.os=${THINKEHR_OS}"
+      args:
+        - THINKEHR_JSW
+        - THINKEHR_SVR
+        - THINKEHR_VER
+      dockerfile: Dockerfile.${THINKEHR_OS}
+    environment:
+      - JDBC_URL=jdbc:postgresql://thinkehr-db/thinkehr
+      - JDBC_USERNAME=thinkehr
+      - JDBC_PASSWORD=thinkehr
+      - THINKEHR_INIT_DB=${THINKEHR_INIT_DB}
+    volumes:
+      - "./ThinkEhrServer.license:/opt/thinkehr/conf/ThinkEhrServer.license"
+      - "./include/conf/:/opt/thinkehr/conf"
+      - "thinkehr-app-indexes:/opt/thinkehr/indexes"
+      - "thinkehr-app-logs:/opt/thinkehr/logs"
+    deploy:
+      replicas: 1
+    networks:
+      back-net:
+        aliases:
+          - thinkehr
+
+networks:
+  back-net:
+    external: true
+
+volumes:
+  thinkehr-db-data:
+  thinkehr-app-indexes:
+  thinkehr-app-logs:

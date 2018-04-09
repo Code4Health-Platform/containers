@@ -1,0 +1,63 @@
+VAGRANTFILE_API_VERSION = "2"
+
+required_plugins = %w( vagrant-hostmanager vagrant-disksize )
+required_plugins.each do |plugin|
+    exec "vagrant plugin install #{plugin};vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
+end
+
+manager_ip = "10.0.3.10"
+docker_user = "vagrant"
+
+Vagrant.configure(2) do |config|
+
+  # vagrant-hostmanager settings
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = false
+  config.hostmanager.include_offline = true
+
+  # Define manager node
+  config.vm.define "manager" do |manager|
+    manager.vm.hostname = "manager"
+    manager.vm.box = "ubuntu/xenial64"
+    manager.vm.network "private_network", ip: manager_ip
+    manager.vm.synced_folder "../", "/containers"
+    manager.vm.provider :virtualbox do |v|
+      v.cpus = 1
+      v.memory = 2048
+    end
+    manager.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "manager.yml"
+      ansible.extra_vars = {
+        ansible_python_interpreter: "/usr/bin/python3",
+        manager_ip: manager_ip,
+        docker_user: docker_user
+      }
+    end
+  end
+
+  # Define worker nodes
+  (1..4).each do |i|
+    config.vm.define "worker-#{i}" do |worker|
+      worker.vm.hostname = "worker-#{i}"
+      worker.vm.box = "ubuntu/xenial64"
+      worker.disksize.size = '20GB'
+      worker.vm.network "private_network", ip: "10.0.3.2#{i}"
+      worker.vm.synced_folder "../", "/containers"
+      worker.vm.provider :virtualbox do |v|
+        v.cpus = 2
+        v.memory = 4096
+      end
+      worker.vm.provision "ansible_local" do |ansible|
+        ansible.playbook = "worker.yml"
+        ansible.extra_vars = {
+            ansible_python_interpreter: "/usr/bin/python3",
+            manager_ip: manager_ip,
+            docker_user: docker_user
+        }
+      end
+    end
+  end
+
+end

@@ -1,0 +1,12 @@
+libstorage:
+  service: s3fs
+s3fs:
+  accessKey: AKIAIOSFODNN7EXAMPLE
+  secretKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+  endpoint: http://10.0.3.21:9001
+  region: us-east-1
+  disablePathStyle: false
+  options:
+  - url=http://10.0.3.21:9001
+  - use_path_request_style
+  - nonempty

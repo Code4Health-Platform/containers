@@ -5,25 +5,13 @@
 *.log
 *.pid
 .env
-*.license
-vagrant-docker/worker_token
+.git
+.cache
 
-######################
-# Package Files
-######################
-*.war
-*.jar
-
-######################
-# Compressed archives
-######################
-*.zip
-*.tar.gz
-
-######################
-# Other binary
-######################
-*.pdf
+# ignore all markdown files (md) beside all README*.md other than README-secret.md
+*.md
+!README*.md
+README-secret.md
 
 ######################
 # Windows
@@ -46,8 +34,3 @@ Desktop.ini
 # Files that might appear on external disk
 .Spotlight-V100
 .Trashes
-
-######################
-# initdb files
-######################
-*.sql

@@ -1,0 +1,28 @@
+
+for i in {1..4}; do     vagrant ssh worker-$i -c "sudo rm -rf /mnt/minio; sudo mkdir -p /mnt/minio/store"; done
+
+
+for i in {1..4}; do
+CTN_NAME=minio-$i
+SVR_NAME=worker-$i
+ENV_PORT=900$i
+\
+docker service create \
+--name "$CTN_NAME" \
+--network "minio_distributed" \
+--replicas "1" \
+-p "$ENV_PORT":9000 \
+--constraint node.hostname=="$SVR_NAME" \
+--mount type=bind,src=/mnt/minio/store,dst=/export \
+-e "MINIO_ACCESS_KEY=AKIAIOSFODNN7EXAMPLE" \
+-e "MINIO_SECRET_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
+minio/minio \
+server \
+http://minio-1/export \
+http://minio-2/export \
+http://minio-3/export \
+http://minio-4/export; done
+
+docker install rexray/s3fs S3FS_OPTIONS="-o url=http://10.0.3.21:9001" S3FS_ENDPOINT="" S3FS_ACCESSKEY="" S3FS_SECRETKEY=""
+
+docker install rexray/s3fs S3FS_OPTIONS="-o url=http://myserver:8080" S3FS_ENDPOINT="" S3FS_ACCESSKEY="AKIAIOSFODNN7EXAMPLE" S3FS_SECRETKEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"

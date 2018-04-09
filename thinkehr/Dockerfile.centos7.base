@@ -5,18 +5,16 @@ FROM centos:7
 LABEL Vendor="Inidus" \
       License=Apache \
       Version=0.0.3 \
-      Maintainer="Inidus <cloud-ops@inidus.io>"
+      Maintainer="Inidus <security@inidus.cloud>"
 
 # Docker - Set ENV to be used in the build
 ENV JAVA_VERSION_MAJOR=8 \
     JAVA_VERSION_MINOR=162 \
     JAVA_VERSION_BUILD=12 \
-    JAVA_URL_HASH=0da788060d494f5095bf8624735fa2f1 \
-    INIDUS_PATH=/opt/inidus/thinkehr
+    JAVA_URL_HASH=0da788060d494f5095bf8624735fa2f1
 
 # Centos - Install pkgs
-RUN mkdir -p ${INIDUS_PATH} && \
-    yum -y --setopt=tsflags=nodocs install epel-release && \
+RUN yum -y --setopt=tsflags=nodocs install epel-release && \
     yum -y --setopt=tsflags=nodocs update && \
     yum -y --setopt=tsflags=nodocs install wget curl unzip python-setuptools hostname inotify-tools which jq supervisor && \
     wget -q --no-cookies --no-check-certificate \

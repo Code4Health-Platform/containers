@@ -1,0 +1,8 @@
+- hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - include: docker.yml
+
+    - name: swarm join
+      shell: docker swarm join --token $(cat /vagrant/worker_token) {{ manager_ip }}:2377

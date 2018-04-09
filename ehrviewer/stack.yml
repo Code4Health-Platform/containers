@@ -1,0 +1,33 @@
+# Marand Think!EHR Viewer
+version: '3.3'
+
+services:
+
+  ehrviewer-app:
+    image: 127.0.0.1:5000/ehrviewer-app
+    labels:
+      - "cloud.inidus.service.client"
+    build:
+      context: .
+      labels:
+        - "cloud.inidus.service.name=EHR Viewer"
+        - "cloud.inidus.service.desc=Marand ThinkEHR EHR Viewer"
+      args:
+        - EHRVIEWER_SRC
+    restart: always
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    networks:
+      - back-net
+    networks:
+      back-net:
+        aliases:
+          - ehrviewer
+networks:
+  back-net:
+    external: true

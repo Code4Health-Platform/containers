@@ -1,0 +1,42 @@
+VAGRANTFILE_API_VERSION = "2"
+
+required_plugins = %w( vagrant-hostmanager )
+required_plugins.each do |plugin|
+    exec "vagrant plugin install #{plugin};vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
+end
+
+Vagrant.configure("2") do |config|
+
+  config.vm.provider 'virtualbox' do |vb|
+    vb.memory = "4096"    # 2Gb RAM
+  end
+
+    # vagrant-hostmanager settings
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = true
+  # config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = false
+  config.hostmanager.include_offline = true
+
+  config.vm.define 'manager' do |node|
+    node.vm.box = "ubuntu/xenial64"
+    node.vm.network :private_network, ip: '192.168.50.50'
+    node.vm.hostname = 'manager'
+    node.vm.provision :docker
+  end
+
+  config.vm.define 'worker1' do | node |
+    node.vm.box = "ubuntu/xenial64"
+    node.vm.network :private_network, ip: '192.168.50.51'
+    node.vm.hostname = 'worker1'
+    node.vm.provision :docker
+  end
+
+  config.vm.define 'worker2' do | node |
+    node.vm.box = "ubuntu/xenial64"
+    node.vm.network :private_network, ip: '192.168.50.52'
+    node.vm.hostname = 'worker2'
+    node.vm.provision :docker
+  end
+
+end

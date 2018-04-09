@@ -1,0 +1,55 @@
+# Marand Think!EHR Explorer + Inidus Extras
+version: '3.3'
+
+services:
+
+  explorer-app:
+    image: 127.0.0.1:5000/explorer-extras
+    labels:
+      - "cloud.inidus.service.client"
+    build:
+      context: .
+      labels:
+        - "cloud.inidus.service.name=EHR Explorer Extras"
+        - "cloud.inidus.service.desc=Marand ThinkEHR EHR Explorer and Inidus Extras"
+      args:
+        - EXPLORER_SRC
+        - APIEXPLORER_SRC
+        - EHRSCAPEMGR_SRC
+    environment:
+      - ehr_explorer4_apphome=/opt/explorer/explorer4_home
+    # volumes:
+    #   - "./conf/explorer:/opt/inidus/explorer/explorer4_home/conf"
+    restart: always
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "8080:8080"
+    networks:
+      back-net:
+        aliases:
+          - explorer-app
+    configs:
+      - source: ehrscape-manager_properties
+        target: /usr/local/tomcat/conf/ehrscape-manager.properties
+      - source: explorer_properties
+        target: /opt/explorer/explorer4_home/conf/ehrexplorer.properties
+      - source: log4j_xml
+        target: /opt/explorer/explorer4_home/conf/log4j.xml
+
+configs:
+  ehrscape-manager_properties:
+    file: ./conf/ehrscape-manager/ehrscape-manager.properties
+  explorer_properties:
+    file: ./conf/explorer/ehrexplorer.properties
+  log4j_xml:
+    file: ./conf/explorer/log4j.xml
+
+networks:
+  back-net:
+    external: true

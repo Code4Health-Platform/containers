@@ -1,0 +1,43 @@
+# Marand ThinkEHR CDR App
+version: '3.3'
+
+services:
+
+  thinkehr-app:
+    image: 127.0.0.1:5000/thinkehr-${THINKEHR_OS}:${THINKEHR_VER}
+    labels:
+      - "cloud.inidus.service.client"
+    build:
+      context: .
+      labels:
+        - "cloud.inidus.service.name=ThinkEHR CDR"
+        - "cloud.inidus.service.desc=Marand ThinkEHR CDR"
+        - "cloud.inidus.service.os=${THINKEHR_OS}"
+      args:
+        - THINKEHR_JSW
+        - THINKEHR_SVR
+        - THINKEHR_VER
+      dockerfile: Dockerfile.${THINKEHR_OS}
+    environment:
+      - JDBC_URL=jdbc:postgresql://thinkehr-db/thinkehr
+      - JDBC_USERNAME=thinkehr
+      - JDBC_PASSWORD=thinkehr
+    volumes:
+      - "./ThinkEhrServer.license:/opt/thinkehr/conf/ThinkEhrServer.license"
+      - "thinkehr-app-indexes:/opt/thinkehr/indexes"
+      - "thinkehr-app-logs:/opt/thinkehr/logs"
+    deploy:
+      replicas: 1
+    networks:
+      back-net:
+        aliases:
+          - thinkehr-app
+          - thinkehr
+
+networks:
+  back-net:
+    external: true
+
+volumes:
+  thinkehr-app-indexes:
+  thinkehr-app-logs:

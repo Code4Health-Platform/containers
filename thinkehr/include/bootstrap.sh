@@ -6,10 +6,17 @@ set -u
 # Supervisord default params
 SUPERVISOR_PARAMS='-c /etc/supervisord.conf'
 
+echo "INFO: THINKEHR_INIT_DB = $THINKEHR_INIT_DB"
+
+echo "INFO: bootstrap is sleeping for 10 seconds"
 sleep 10
 
-if [ ! -e "/opt/thinkehr/db-init-complete" ]; then
-  cd /opt/thinkehr; ./bin/initdb.sh; touch /opt/thinkehr/db-init-complete;
+# if [ ! -f /opt/thinkehr/status/db-init-complete ]; then
+#   cd /opt/thinkehr; ./bin/initdb.sh; touch /opt/thinkehr/status/db-init-complete;
+# fi
+
+if [[ "${THINKEHR_INIT_DB}" == "true" ]]; then
+  cd /opt/thinkehr; ./bin/initdb.sh; echo "INFO: bootstrap is sleeping for 5 seconds"; sleep 5
 fi
 
 # We have TTY, so probably an interactive container...
